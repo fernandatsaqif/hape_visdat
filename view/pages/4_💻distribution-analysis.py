@@ -26,7 +26,7 @@ st.markdown(f"<html style='scroll-behavior: smooth;'></html>", unsafe_allow_html
 # with open('style.css')as f:
 #     st.markdown(f"<style>{f.read()}</style>", unsafe_allow_html = True)
 
-dataset_url = "https://raw.githubusercontent.com/novinbukannopin/uas-visdat/main/assets/clean/laptop-price.csv"
+dataset_url = "https://raw.githubusercontent.com/fernandatsaqif/hape_visdat/main/clean/smartphone.csv"
 
 @st.cache_data
 def get_data() -> pd.DataFrame:
@@ -37,29 +37,29 @@ laptop = get_data()
 
 
 st.header('Distribution Analysis') #Distribution Visualization
-option_columns = ["warranty", "msoffice", "os", "windows", "weight", "touchscreen"]
-option_columns_num = [
-    "brand", "processor_brand",
-    "processor_name", "processor_gnrtn",
-    "ram_type", "ram_gb",
-    'ssd', 'hdd']
+# option_columns = ["warranty", "msoffice", "os", "windows", "weight", "touchscreen"]
+# option_columns_num = [
+#     "brand", "processor_brand",
+#     "processor_name", "processor_gnrtn",
+#     "ram_type", "ram_gb",
+#     'ssd', 'hdd']
 
-choice_categorical = st.selectbox("Choose the enabled variable used for the x-axis. Try Selecting Warranty", options=option_columns)
+# choice_categorical = st.selectbox("Choose the enabled variable used for the x-axis. Try Selecting Warranty", options=option_columns)
 
-choice_categorical_num = st.selectbox("Choose the enabled variable used for the legend. Try Selecting Brand", options=option_columns_num)
+# choice_categorical_num = st.selectbox("Choose the enabled variable used for the legend. Try Selecting Brand", options=option_columns_num)
 
-value_counts = laptop[choice_categorical_num] \
-    .groupby(laptop[choice_categorical]) \
-    .value_counts() \
-    .reset_index()
+# value_counts = laptop[choice_categorical_num] \
+#     .groupby(laptop[choice_categorical]) \
+#     .value_counts() \
+#     .reset_index()
 
-value_counts.columns = ['Data', choice_categorical_num, 'Count']
+# value_counts.columns = ['Data', choice_categorical_num, 'Count']
 
-fig = px.histogram(
-    value_counts,
-    x="Data",
-    y="Count",
-    color=choice_categorical_num,
-    title="Histogram of " +choice_categorical)
+# fig = px.histogram(
+#     value_counts,
+#     x="Data",
+#     y="Count",
+#     color=choice_categorical_num,
+#     title="Histogram of " +choice_categorical)
 
-st.plotly_chart(fig, use_container_width=True)
+# st.plotly_chart(fig, use_container_width=True)
