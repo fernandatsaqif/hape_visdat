@@ -125,28 +125,9 @@ category_df = category_df.head(5)
 #Chart HP paling termahal
 with col1:
     st.subheader("Top 5 Smartphones with the Highest Prices")
-    fig = px.bar(category_df, x = "model", y = "price", text = ['Rp{:,.2f}'.format(x) for x in category_df["price"]], template = "seaborn")
+    fig = px.bar(category_df, x = "model", y = "price", text = ['Rp{:,.0f}'.format(x) for x in category_df["price"]], template = "seaborn")
     st.plotly_chart(fig,use_container_width=True, height = 200)
 
-# topChartHarga = filtere_phone.groupby(by="model", as_index=False)[
-# "price"
-# ].sum()
-# topChartHarga = topChartHarga.sort_values(by="price", ascending=False,)
-# topChartHarga = topChartHarga.head(5)
-
-# with col1:
-#     fig = px.bar(
-#         topChartHarga,
-#         x="model",
-#         y="price",
-#         title="Top 5 Smartphone dengan Harga Tertinggi",
-#         template="seaborn",
-#         barmode="group",
-#         text="price",
-#         labels={"price": "", "model": ""},
-#     )
-# fig.update_traces(texttemplate="%{text}", textposition="inside")
-# st.plotly_chart(fig, use_container_width=True)
 
 # Grafik Penjualan berdasarkan wilayah
 with col2:
