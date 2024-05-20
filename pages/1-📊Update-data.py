@@ -57,8 +57,8 @@ total_product = len(laptop['brand_name'])
 
 col1, col2, col3 = st.columns(3)
 col1.metric("Total Product", f"{str(total_product)} Product", "20%")
-col2.metric("Brand Laptop", f"{str(jumlah_brand)} Brand", "-8%")
+col2.metric("Brand Smartphone", f"{str(jumlah_brand)} Brand", "-8%")
 col3.metric("Brand Processor", f"{str(processor_brand)} Brand", "5%")
 
-st.subheader("Table")
+st.subheader("Table Data")
 st.table(laptop)
