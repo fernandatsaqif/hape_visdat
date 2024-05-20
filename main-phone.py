@@ -6,16 +6,17 @@ import numpy as np  # import np
 import pandas as pd  # import pd
 import plotly.express as px  # import chart
 import plotly.graph_objects as go
-import streamlit as st
 import altair as alt
 import math
 from PIL import Image
+import streamlit as st
+from streamlit_option_menu import option_menu
 
 import seaborn as sns
 from pandas import DataFrame
 
 st.set_page_config(
-    page_title="Update - RectoGadget",
+    page_title="RectoGadget",
     page_icon="✅",
     layout="wide",
     initial_sidebar_state="collapsed"
@@ -47,8 +48,8 @@ st.markdown(
 st.sidebar.markdown(
     """
 > Sections Introduction
-1. [Top 5 Smartphone dengan Harga Tertinggi](#top-5-smartphone-dengan-harga-tertinggi)
-2. [Peminatan penjualan berdasarkan prosesor](#peminatan-penjualan-berdasarkan-prosesor)
+1. [Top 5 Smartphones with the Highest Prices](#top-5-smartphones-with-the-highest-Prices)
+2. [Sales focus based on processor](#sales-focus-based-on-processor)
 3. [Best Rated phones](#best-rated-phones)
 4. [Distribution of Processors by Manufacturer and Brand](#distribution-of-processors-by-manufacturer-and-brand)
 """,
@@ -56,12 +57,12 @@ st.sidebar.markdown(
 )
 
 # Set Dashboard Title
-st.title("Smartphone Dashboard Sales")
-st.markdown('<style>div.block-container{padding-top:1rem}</style>',unsafe_allow_html=True)
+st.write("""<h2 style="text-align: center; margin-top:0;">Smartphone Dashboard Sales</h2>""", unsafe_allow_html=True)
+st.markdown("***")
 
 col1, col2 = st.columns((2))
 
-#membuat sidebar
+#membuat sidebar         
 st.sidebar.header("Choose your filter: ")
 
 #Create filter for brand name
@@ -122,7 +123,7 @@ category_df = category_df.head(5)
 
 #Chart HP paling termahal
 with col1:
-    st.subheader("Top 5 Smartphone dengan Harga Tertinggi")
+    st.subheader("Top 5 Smartphones with the Highest Prices")
     fig = px.bar(category_df, x = "model", y = "price", text = ['Rp{:,.2f}'.format(x) for x in category_df["price"]], template = "seaborn")
     st.plotly_chart(fig,use_container_width=True, height = 200)
 
@@ -148,7 +149,7 @@ with col1:
 
 # Grafik Penjualan berdasarkan wilayah
 with col2:
-    st.subheader("Peminatan penjualan berdasarkan prosesor")
+    st.subheader("Sales focus based on processor")
     fig = px.pie(filtere_phone, values = "price", names = "processor_brand", hole = 0.5)
     fig.update_traces(text = filtere_phone["processor_brand"], textposition = "outside")
     st.plotly_chart(fig,use_container_width=True)
@@ -299,4 +300,35 @@ with procie_2:
         return2="Count",
         title=f"Distribution of Processor Generation Usage \nby {option} Brand",
         orientation="v",
+    )
+
+st.header("Percentage of Smartphone by ram and internal")  #
+
+option = select_box(
+    title="Choose a column to plot count. Try Selecting Brand ",
+    column="brand_name",
+    key="ram_internal",
+)
+ram, internal = st.columns([6, 6])
+
+with ram:
+    pie_chart(
+        columns="brand_name",
+        by=option,
+        values="ram_capacity",
+        labels="ram_capacity",
+        names="ram_capacity",
+        color="ram_capacity",
+        title=f"Distribution of ram capacity by {option} Brand ",
+    )
+
+with internal:
+    pie_chart(
+        columns="brand_name",
+        by=option,
+        values="internal_memory",
+        labels="internal_memory",
+        names="internal_memory",
+        color="internal_memory",
+        title=f"Distribution internal memory by {option} Brand ",
     )
