@@ -22,7 +22,7 @@ st.set_page_config(
 )
 st.set_option('deprecation.showPyplotGlobalUse', False)
 
-dataset_url = "https://raw.githubusercontent.com/fernandatsaqif/hape_visdat/main/clean/smartphone.csv"
+dataset_url = "https://raw.githubusercontent.com/hellonandoo/hape_visdat/main/clean/smartphone.csv"
 
 @st.cache_data
 def get_data() -> pd.DataFrame:
@@ -60,5 +60,5 @@ col1.metric("Total Product", f"{str(total_product)} Product", "20%")
 col2.metric("Brand Smartphone", f"{str(jumlah_brand)} Brand", "-8%")
 col3.metric("Brand Processor", f"{str(processor_brand)} Brand", "5%")
 
-st.subheader("Table Data")
+st.subheader(f"Table Data")
 st.table(phone)

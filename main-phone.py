@@ -27,7 +27,7 @@ st.set_option("deprecation.showPyplotGlobalUse", False)
 
 st.markdown(f"<html style='scroll-behavior: smooth;'></html>", unsafe_allow_html=True)
 
-dataset_url = "https://raw.githubusercontent.com/fernandatsaqif/hape_visdat/main/clean/smartphone.csv"
+dataset_url = "https://raw.githubusercontent.com/hellonandoo/hape_visdat/main/clean/smartphone.csv"
 
 
 @st.cache_data
