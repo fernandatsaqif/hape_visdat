@@ -49,10 +49,11 @@ st.markdown(
 st.sidebar.markdown(
     """
 > Sections Introduction
-1. [Top 5 Smartphones with the Highest Prices](#top-5-smartphones-with-the-highest-Prices)
+1. [Top 5 Smartphones with the Highest Prices](#top-5-smartphones-with-the-highest-prices)
 2. [Sales focus based on processor](#sales-focus-based-on-processor)
 3. [Best Rated phones](#best-rated-phones)
 4. [Distribution of Processors by Manufacturer and Brand](#distribution-of-processors-by-manufacturer-and-brand)
+5. [Percentage of Smartphone by ram and internal](#percentage-of-smartphone-by-ram-and-internal)
 """,
     unsafe_allow_html=True,
 )
@@ -67,52 +68,52 @@ col1, col2 = st.columns((2))
 st.sidebar.header("Choose your filter: ")
 
 #Create filter for brand name
-country = st.sidebar.multiselect("Pick your brand",phone["brand_name"].unique())
-if not country:
+brand = st.sidebar.multiselect("Pick your brand",phone["brand_name"].unique())
+if not brand:
     phone2 = phone.copy()
 else:
-    phone2 = phone[phone["brand_name"].isin(country)]
+    phone2 = phone[phone["brand_name"].isin(brand)]
 
 #Create filter for Rating
-roast = st.sidebar.multiselect("Pick your Rating",phone2["rating"].unique())
-if not roast:
+rating = st.sidebar.multiselect("Pick your Rating",phone2["rating"].unique())
+if not rating:
     phone3 = phone2.copy()
 else:
-    phone3 = phone2[phone2["rating"].isin(roast)]
+    phone3 = phone2[phone2["rating"].isin(rating)]
 
 #Create filter for Prosesor
-size = st.sidebar.multiselect("Pick your Prosesor",phone3["processor_brand"].unique())
-if not size:
+procie = st.sidebar.multiselect("Pick your Prosesor",phone3["processor_brand"].unique())
+if not procie:
     phone4 = phone3.copy()
 else:
-    phone4 = phone3[phone3["processor_brand"].isin(size)]
+    phone4 = phone3[phone3["processor_brand"].isin(procie)]
 
 #Create filter for refresh rate
-loyalty = st.sidebar.multiselect("Refresh rate phone?",phone4["refresh_rate"].unique())
+refreshrate = st.sidebar.multiselect("Refresh rate phone?",phone4["refresh_rate"].unique())
 
 st.sidebar.header("(for section 1 & 2)")
 
-# Filter based on country, roast, size, and loyalty card
-if not country and not roast and not size and not loyalty:
+# Filter based on brand, rating, procie, and refreshrate card
+if not brand and not rating and not procie and not refreshrate:
     filtere_phone = phone
-elif not roast and not size and not loyalty:
-    filtere_phone = phone[phone["brand_name"].isin(country)]
-elif not country and not size and not loyalty:
-    filtere_phone = phone[phone["rating"].isin(roast)]
-elif not country and not roast and not loyalty:
-    filtere_phone = phone[phone["processor_brand"].isin(size)]
-elif roast and size and loyalty:
-    filtere_phone = phone4[phone4["rating"].isin(roast) & phone4["processor_brand"].isin(size) & phone4["refresh_rate"].isin(loyalty)]
-elif country and size and loyalty:
-    filtere_phone = phone4[phone4["brand_name"].isin(country) & phone4["processor_brand"].isin(size) & phone4["refresh_rate"].isin(loyalty)]
-elif country and roast and loyalty:
-    filtere_phone = phone4[phone4["brand_name"].isin(country) & phone4["rating"].isin(roast) & phone4["refresh_rate"].isin(loyalty)]
-elif roast and loyalty:
-    filtere_phone = phone4[phone4["rating"].isin(roast) & phone4["refresh_rate"].isin(loyalty)]
-elif country and loyalty:
-    filtere_phone = phone4[phone4["brand_name"].isin(country) & phone4["refresh_rate"].isin(loyalty)]
-elif size and loyalty:
-    filtere_phone = phone4[phone4["processor_brand"].isin(size) & phone4["refresh_rate"].isin(loyalty)]
+elif not rating and not procie and not refreshrate:
+    filtere_phone = phone[phone["brand_name"].isin(brand)]
+elif not brand and not procie and not refreshrate:
+    filtere_phone = phone[phone["rating"].isin(rating)]
+elif not brand and not rating and not refreshrate:
+    filtere_phone = phone[phone["processor_brand"].isin(procie)]
+elif rating and procie and refreshrate:
+    filtere_phone = phone4[phone4["rating"].isin(rating) & phone4["processor_brand"].isin(procie) & phone4["refresh_rate"].isin(refreshrate)]
+elif brand and procie and refreshrate:
+    filtere_phone = phone4[phone4["brand_name"].isin(brand) & phone4["processor_brand"].isin(procie) & phone4["refresh_rate"].isin(refreshrate)]
+elif brand and rating and refreshrate:
+    filtere_phone = phone4[phone4["brand_name"].isin(brand) & phone4["rating"].isin(rating) & phone4["refresh_rate"].isin(refreshrate)]
+elif rating and refreshrate:
+    filtere_phone = phone4[phone4["rating"].isin(rating) & phone4["refresh_rate"].isin(refreshrate)]
+elif brand and refreshrate:
+    filtere_phone = phone4[phone4["brand_name"].isin(brand) & phone4["refresh_rate"].isin(refreshrate)]
+elif procie and refreshrate:
+    filtere_phone = phone4[phone4["processor_brand"].isin(procie) & phone4["refresh_rate"].isin(refreshrate)]
 else:
     filtere_phone = phone4
 

@@ -28,7 +28,7 @@ dataset_url = "https://raw.githubusercontent.com/fernandatsaqif/hape_visdat/main
 def get_data() -> pd.DataFrame:
     return pd.read_csv(dataset_url)
 
-laptop = get_data()
+phone = get_data()
 
 
 
@@ -48,11 +48,11 @@ st.sidebar.markdown('''
 
 st.subheader("Metric")
 
-jumlah_brand = len(laptop['brand_name'].unique())
-model = len(laptop['model'].unique())
-processor_brand = len(laptop['processor_brand'].unique())
-ram_capacity = len(laptop['ram_capacity'].unique())
-total_product = len(laptop['brand_name'])
+jumlah_brand = len(phone['brand_name'].unique())
+model = len(phone['model'].unique())
+processor_brand = len(phone['processor_brand'].unique())
+ram_capacity = len(phone['ram_capacity'].unique())
+total_product = len(phone['brand_name'])
 
 
 col1, col2, col3 = st.columns(3)
@@ -61,4 +61,4 @@ col2.metric("Brand Smartphone", f"{str(jumlah_brand)} Brand", "-8%")
 col3.metric("Brand Processor", f"{str(processor_brand)} Brand", "5%")
 
 st.subheader("Table Data")
-st.table(laptop)
+st.table(phone)
