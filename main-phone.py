@@ -1,23 +1,17 @@
-import time  #
-
-import streamlit as st
 import matplotlib.pyplot as plt
-import matplotlib.pyplot as plt
-import numpy as np  # import np
-import pandas as pd  # import pd
-import plotly.express as px  # import chart
+import numpy as np
+import pandas as pd
+import plotly.express as px
 import plotly.graph_objects as go
+import streamlit as st
 import altair as alt
 import math
 from PIL import Image
-
-
-
 import seaborn as sns
 from pandas import DataFrame
 
 st.set_page_config(
-    page_title="RectoGadget",
+    page_title="Update - RectoGadget",
     page_icon="✅",
     layout="wide",
     initial_sidebar_state="collapsed"
@@ -27,13 +21,11 @@ st.set_option("deprecation.showPyplotGlobalUse", False)
 
 st.markdown(f"<html style='scroll-behavior: smooth;'></html>", unsafe_allow_html=True)
 
-dataset_url = "https://raw.githubusercontent.com/hellonandoo/hape_visdat/main/clean/smartphone.csv"
-
+dataset_url = "https://raw.githubusercontent.com/fernandatsaqif/hape_visdat/main/clean/smartphone.csv"
 
 @st.cache_data
 def get_data() -> pd.DataFrame:
     return pd.read_csv(dataset_url)
-
 
 phone = get_data()
 
@@ -49,269 +41,204 @@ st.markdown(
 st.sidebar.markdown(
     """
 > Sections Introduction
-1. [Top 5 Smartphones with the Highest Prices](#top-5-smartphones-with-the-highest-prices)
-2. [Sales focus based on processor](#sales-focus-based-on-processor)
-3. [Best Rated phones](#best-rated-phones)
-4. [Distribution of Processors by Manufacturer and Brand](#distribution-of-processors-by-manufacturer-and-brand)
-5. [Percentage of Smartphone by ram and internal](#percentage-of-smartphone-by-ram-and-internal)
+1. [Top 5 Smartphone dengan Harga Tertinggi](#top-5-smartphone-dengan-harga-tertinggi)
+2. [Prosesor yang Paling Banyak Digunakan](#prosesor-yang-paling-banyak-digunakan)
+3. [Model Smartphone dari Tiap Brand Berdasarkan Harga dan Rating](#model-smartphone-dari-tiap-brand-berdasarkan-harga-dan-rating)
+4. [Model Smartphone berdasarkan Prosesor](#distribution-of-processors-by-manufacturer-and-brand)
 """,
     unsafe_allow_html=True,
 )
 
-# Set Dashboard Title
 st.write("""<h2 style="text-align: center; margin-top:0;">Smartphone Dashboard Sales</h2>""", unsafe_allow_html=True)
 st.markdown("***")
 
-col1, col2 = st.columns((2))
 
-#membuat sidebar         
-st.sidebar.header("Choose your filter: ")
+# Data Summary
+num_brands = phone["brand_name"].nunique()
+num_models = phone["model"].nunique()
+num_processors = phone["processor_brand"].nunique()
 
-#Create filter for brand name
-brand = st.sidebar.multiselect("Pick your brand",phone["brand_name"].unique())
-if not brand:
-    phone2 = phone.copy()
-else:
-    phone2 = phone[phone["brand_name"].isin(brand)]
+# Custom CSS styles
+st.markdown("""
+    <style>
+    .summary-container {
+        display: flex;
+        justify-content: space-around;
+        margin-bottom: 20px;
+    }
+    .summary-box {
+        flex: 1;
+        padding: 20px;
+        margin: 10px;
+        border-radius: 10px;
+        text-align: center;
+        color: white;
+        font-size: 18px;
+        font-weight: bold;
+    }
+    .summary-box p.value {
+        font-size: 32px;  /* Larger font size for the numbers */
+        margin: 0;
+    }
+    .brand {
+        background-color: #1f77b4;
+    }
+    .model {
+        background-color: #ff7f0e;
+    }
+    .processor {
+        background-color: #2ca02c;
+    }
+    </style>
+    """, unsafe_allow_html=True)
 
-#Create filter for Rating
-rating = st.sidebar.multiselect("Pick your Rating",phone2["rating"].unique())
-if not rating:
-    phone3 = phone2.copy()
-else:
-    phone3 = phone2[phone2["rating"].isin(rating)]
+# Display summary metrics with custom styles
+st.markdown("""
+    <div class="summary-container">
+        <div class="summary-box brand">
+            <p>Jumlah Brand</p>
+            <p class="value">{}</p>
+        </div>
+        <div class="summary-box model">
+            <p>Jumlah Model Smartphone</p>
+            <p class="value">{}</p>
+        </div>
+        <div class="summary-box processor">
+            <p>Jumlah Brand Prosesor</p>
+            <p class="value">{}</p>
+        </div>
+    </div>
+    """.format(num_brands, num_models, num_processors), unsafe_allow_html=True)
 
-#Create filter for Prosesor
-procie = st.sidebar.multiselect("Pick your Prosesor",phone3["processor_brand"].unique())
-if not procie:
-    phone4 = phone3.copy()
-else:
-    phone4 = phone3[phone3["processor_brand"].isin(procie)]
+# Add map visualization for country of origin of smartphones
+st.header("Peta Asal Smartphone Berdasarkan Negara")
+country_counts = phone['country'].value_counts().reset_index()
+country_counts.columns = ['country', 'count']
+fig = px.choropleth(
+    country_counts,
+    locations="country",
+    locationmode='country names',
+    color="count",
+    hover_name="country",
+    color_continuous_scale=px.colors.sequential.Plasma,
+    title='Jumlah Model Smartphone Berdasarkan Negara Asal'
+)
+fig.update_geos(
+    showcoastlines=True,
+    coastlinecolor="RebeccaPurple",
+    showland=True,
+    landcolor="LightGreen",
+    showocean=True,
+    oceancolor="LightBlue",
+    showlakes=True,
+    lakecolor="Blue",
+    showrivers=True,
+    rivercolor="Blue"
+)
+fig.update_layout(
+    geo=dict(
+        bgcolor='rgba(0,0,0,0)',
+        showframe=False,
+        projection_type='equirectangular',
+        landcolor='white',
+        showland=True,
+        lakecolor='rgb(127,205,255)',
+        showlakes=True,
+        subunitcolor='black',
+        countrycolor='black',
+        countrywidth=0.5,
+        subunitwidth=0.5
+    ),
+    margin=dict(l=0, r=0, t=30, b=0)
+)
+st.plotly_chart(fig, use_container_width=True)
 
-#Create filter for refresh rate
-refreshrate = st.sidebar.multiselect("Refresh rate phone?",phone4["refresh_rate"].unique())
-
-st.sidebar.header("(for section 1 & 2)")
-
-# Filter based on brand, rating, procie, and refreshrate card
-if not brand and not rating and not procie and not refreshrate:
-    filtere_phone = phone
-elif not rating and not procie and not refreshrate:
-    filtere_phone = phone[phone["brand_name"].isin(brand)]
-elif not brand and not procie and not refreshrate:
-    filtere_phone = phone[phone["rating"].isin(rating)]
-elif not brand and not rating and not refreshrate:
-    filtere_phone = phone[phone["processor_brand"].isin(procie)]
-elif rating and procie and refreshrate:
-    filtere_phone = phone4[phone4["rating"].isin(rating) & phone4["processor_brand"].isin(procie) & phone4["refresh_rate"].isin(refreshrate)]
-elif brand and procie and refreshrate:
-    filtere_phone = phone4[phone4["brand_name"].isin(brand) & phone4["processor_brand"].isin(procie) & phone4["refresh_rate"].isin(refreshrate)]
-elif brand and rating and refreshrate:
-    filtere_phone = phone4[phone4["brand_name"].isin(brand) & phone4["rating"].isin(rating) & phone4["refresh_rate"].isin(refreshrate)]
-elif rating and refreshrate:
-    filtere_phone = phone4[phone4["rating"].isin(rating) & phone4["refresh_rate"].isin(refreshrate)]
-elif brand and refreshrate:
-    filtere_phone = phone4[phone4["brand_name"].isin(brand) & phone4["refresh_rate"].isin(refreshrate)]
-elif procie and refreshrate:
-    filtere_phone = phone4[phone4["processor_brand"].isin(procie) & phone4["refresh_rate"].isin(refreshrate)]
-else:
-    filtere_phone = phone4
-
-col1, col2 = st.columns((2))
-
-category_df = filtere_phone.groupby(by = ["model"], as_index = False)["price"].sum()
-category_df = category_df.sort_values(by = ["price"], ascending=False,)
+category_df = phone.groupby(by="model", as_index=False)["price"].sum()
+category_df = category_df.sort_values(by="price", ascending=False,)
 category_df = category_df.head(5)
 
-#Chart HP paling termahal
-with col1:
-    st.subheader("Top 5 Smartphones with the Highest Prices")
-    fig = px.bar(category_df, x = "model", y = "price", text = ['Rp{:,.0f}'.format(x) for x in category_df["price"]], template = "seaborn")
-    st.plotly_chart(fig,use_container_width=True, height = 200)
+tabs = st.tabs(["Top 5 Smartphone", "Prosesor Terbanyak", "Smartphone Berdasarkan Harga & Rating", "Top 10 Smartphone dengan Prosesor Terbaik", "Distribusi RAM & Internal Storage"])
 
+with tabs[0]:
+    st.header("Top 5 Smartphone dengan Harga Tertinggi")
+    fig = px.bar(category_df, x="model", y="price", 
+                 text=['Rp {:,.0f}'.format(x) for x in category_df["price"]], template="seaborn")
+    st.plotly_chart(fig, use_container_width=True, height=200)
 
-# Grafik Penjualan berdasarkan wilayah
-with col2:
-    st.subheader("Sales focus based on processor")
-    fig = px.pie(filtere_phone, values = "price", names = "processor_brand", hole = 0.5)
-    fig.update_traces(text = filtere_phone["processor_brand"], textposition = "outside")
-    st.plotly_chart(fig,use_container_width=True)
-
-# RATINGS
-
-st.header("Best Rated phones")
-
-rating_col_1, rating_col_2 = st.columns([3, 9])
-with rating_col_1:
-    st.write("\n")
-    st.write("Insert amount")
-    color = st.select_slider(
-        "Set the number of data to be displayed",
-        options=[5, 10, 15, 20, 25, 30, 40, 50],
-        key="rating_1",
-    )
-    st.write(f"Top {color} \n phone Ratings")
-with rating_col_2:
-    rating_5, rating_4, rating_3, rating_2, rating_1 = st.tabs(
-        [
-            "Rating :five:",
-            "Rating :four:",
-            "Rating :three:",
-            "Rating :two:",
-            "Rating :one:",
-        ]
-    )
-
-
-# FUNC DOT PLOTS RATING
-def dot_plots_rating_phone(rating, bestnum):
-    rating_filtered = phone.loc[(phone["rating"] == rating)]
-    sort_rating_price = rating_filtered.sort_values("price", ascending=False)
-    data_rating = sort_rating_price.head(bestnum)
-    fig = px.scatter(
-        data_rating,
-        y="brand_name",
-        x="price",
-        color="brand_name",
-        symbol="brand_name",
-        hover_data=rating_filtered,
-    )
-    fig.update_traces(marker_size=10)
+with tabs[1]:
+    st.header("Prosesor yang Paling Banyak Digunakan")
+    fig = px.pie(phone, values="price", names="processor_brand", hole=0.5)
+    fig.update_traces(text=phone["processor_brand"], textposition="outside")
     st.plotly_chart(fig, use_container_width=True)
 
+with tabs[2]:
+    st.header("Model Smartphone dari Tiap Brand Berdasarkan Harga dan Rating")
 
-with rating_5:
-    dot_plots_rating_phone(rating=5, bestnum=color)
+    selected_brand = st.selectbox("Filter by Brand", phone["brand_name"].unique())
 
-with rating_4:
-    dot_plots_rating_phone(rating=4, bestnum=color)
+    min_price, max_price = st.slider("Filter by Price (Rp)", 
+                                     int(phone["price"].min()), 
+                                     int(phone["price"].max()), 
+                                     (int(phone["price"].min()), int(phone["price"].max())), 
+                                     step=100000)
 
-with rating_3:
-    dot_plots_rating_phone(rating=3, bestnum=color)
+    min_price_str = "Rp {:,.0f}".format(min_price)
+    max_price_str = "Rp {:,.0f}".format(max_price)
 
-with rating_2:
-    dot_plots_rating_phone(rating=2, bestnum=color)
+    st.write(f"Minimum Price: {min_price_str} | Maximum Price: {max_price_str}")
 
-with rating_1:
-    dot_plots_rating_phone(rating=1, bestnum=color)
+    selected_rating = st.selectbox("Filter by Rating", [1, 2, 3, 4, 5])
 
-# FUNC PIE CHART
-def pie_chart(columns, by, values, labels, names, color, title):
-    fig = px.pie(
-        phone.loc[(phone[columns] == by)],
-        values=values,
-        labels=labels,
-        names=names,
-        color=color,
-        title=f"{title}",
-    )
+    filtered_phone = phone[(phone["brand_name"] == selected_brand) & 
+                           (phone["price"] >= min_price) & 
+                           (phone["price"] <= max_price) & 
+                           (phone["rating"] == selected_rating)]
 
-    fig.update_layout(xaxis_title=option, yaxis_title="Count of " + option)
+    top_rated_phones = filtered_phone.sort_values(by="rating", ascending=False).head(10)
+
+    fig = px.bar(top_rated_phones, x="model", y="price",
+                 labels={"model": "Model", "price": "Price (Rp)"},
+                 orientation="v", template="seaborn")
+    fig.update_traces(text=['Rp {:,.0f}'.format(x) for x in top_rated_phones["price"]],
+                      texttemplate='%{text}', textposition='inside')
+    fig.update_layout(xaxis=dict(title='Model'), yaxis=dict(title='Price (Rp)'))
     st.plotly_chart(fig, use_container_width=True)
 
+with tabs[3]:
+    st.header("Top 10 Model Smartphone dengan Prosesor Terbaik")
 
-# FUNC BAR CHART
-def bar_chart(by, columns, return1, return2, title, orientation):
-    value_counts = phone[phone[by] == option][columns].value_counts().reset_index()
+    selected_brand_for_processor = st.selectbox("Filter by Brand (Processor)", (phone["brand_name"].unique()))
 
-    value_counts.columns = [return1, return2]
+    top_10_phones = phone.groupby("brand_name").apply(lambda x: x.nlargest(10, 'processor_speed')).reset_index(drop=True)
 
-    fig = px.bar(
-        value_counts,
-        x=value_counts.columns[0],
-        y=value_counts.columns[1],
-        text=value_counts.columns[1],
-        color=value_counts.columns[0],
-        title=f"{title}",
-        orientation=orientation,
-    )
-
-    fig.update_layout(
-        xaxis_title=value_counts.columns[0],
-        yaxis_title="Count of " + value_counts.columns[0],
-    )
-
+    fig = px.bar(top_10_phones[top_10_phones["brand_name"] == selected_brand_for_processor], 
+                 x="model", y="price", color="processor_brand",
+                 text="price", hover_data=["model", "price", "processor_speed"],
+                 labels={"price": "Price (Rp)", "model": "Model", "processor_brand": "Merek Prosesor", "processor_speed": "Processor Speed (GHz)"})
+    fig.update_traces(text=['Rp {:,.0f}'.format(x) for x in top_10_phones["price"]],
+                      texttemplate='%{text}', textposition='outside')
+    fig.update_layout(xaxis=dict(title='Model'), yaxis=dict(title='Price (Rp)'), legend=dict(orientation="h", yanchor="bottom", y=1.02, xanchor="right", x=1))
     st.plotly_chart(fig, use_container_width=True)
 
+with tabs[4]:
+    st.header("Distribusi RAM dan Internal Storage yang Paling Banyak Digunakan")
 
-# FUNC SELECT BOX CUSTOM
-def select_box(title, column, key):
-    data = st.selectbox(title, phone[column].unique(), key=key)
-    return data
+    selected_brand_for_ram_storage = st.selectbox("Filter by Brand (RAM & Internal)", (phone["brand_name"].unique()), key="ram_storage_brand_filter")
 
-st.header(
-    "Distribution of Processors by Manufacturer and Brand"
-)  # Processor Distribution by Manufacturer and Brand, Processor Distribution by Manufacturer and Brand.
+    col1, col2 = st.columns((2))
 
-option = select_box(
-    title="Choose a column to plot count. Try Selecting Brand ",
-    column="brand_name",
-    key="procie",
-)
-procie_1, procie_2 = st.columns([6, 6])
+    with col1:
+        st.subheader("Distribusi RAM yang Paling Banyak Digunakan")
+        fig_ram = px.pie(phone[phone["brand_name"] == selected_brand_for_ram_storage], 
+                     values="price", names="ram_capacity", hole=0.5)
+        fig_ram.update_traces(text=phone["ram_capacity"], textposition="outside")
+        st.plotly_chart(fig_ram, use_container_width=True)
 
-with procie_1:
-    # procie_type_count = phone.groupby('brand')['processor_brand'].value_counts()
-    procie_value_count = (
-        phone[phone["brand_name"] == option]["processor_brand"]
-        .value_counts()
-        .reset_index()
-    )
+    with col2:
+        st.subheader("Distribusi Internal Storage yang Paling Banyak Digunakan")
+        fig_storage = px.pie(phone[phone["brand_name"] == selected_brand_for_ram_storage], 
+                            values="price", names="internal_memory", hole=0.5)
+        fig_storage.update_traces(text=phone["internal_memory"], textposition="outside")
+        st.plotly_chart(fig_storage, use_container_width=True)
 
-    fig = px.scatter(
-        procie_value_count,
-        x="processor_brand",
-        y="count",
-        size="count",
-        color="processor_brand",
-        hover_name="processor_brand",
-        title=f"Distribution of Processor Brand \nby {option} Brand",
-    )
-
-    fig.update_layout(
-        xaxis_title="Processor Brand", yaxis_title="Count of Processor Brand"
-    )
-
-    st.plotly_chart(fig, use_container_width=True)
-
-
-with procie_2:
-    bar_chart(
-        by="brand_name",
-        columns="processor_speed",
-        return1="Processor Speed",
-        return2="Count",
-        title=f"Distribution of Processor Generation Usage \nby {option} Brand",
-        orientation="v",
-    )
-
-st.header("Percentage of Smartphone by ram and internal")  #
-
-option = select_box(
-    title="Choose a column to plot count. Try Selecting Brand ",
-    column="brand_name",
-    key="ram_internal",
-)
-ram, internal = st.columns([6, 6])
-
-with ram:
-    pie_chart(
-        columns="brand_name",
-        by=option,
-        values="ram_capacity",
-        labels="ram_capacity",
-        names="ram_capacity",
-        color="ram_capacity",
-        title=f"Distribution of ram capacity by {option} Brand ",
-    )
-
-with internal:
-    pie_chart(
-        columns="brand_name",
-        by=option,
-        values="internal_memory",
-        labels="internal_memory",
-        names="internal_memory",
-        color="internal_memory",
-        title=f"Distribution internal memory by {option} Brand ",
-    )
+        
